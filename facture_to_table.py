@@ -964,10 +964,10 @@ class InfoFetcher:
             self.result_columns[self.annexe_columns[self.current_annexe_column]['result_key'][0]]['current_value'] += ' / ' + \
                             self.df_annexe.loc[self.current_current_df_row[0]+unit_counter,self.annexe_columns[self.current_annexe_column]['colname']]
 
-        # If any of key from the self.dict_stds['unit_standard'] contains Turkmen version of unit then assign it as current value
+        # If any of key from the self.dict_stds['unit_standard'] contains Turkmen version of unit then assign it as current value.
         try:
             for trash in self.dict_stds['unit_standard'].keys():
-                self.unit_tm=self.df_annexe.loc[self.current_current_df_row[0]+2,self.annexe_columns[self.current_annexe_column]['colname']]
+                self.unit_tm=self.result_columns[self.annexe_columns[self.current_annexe_column]['result_key'][0]]['current_value']
                 # print('Inside nested dict')
                 # print('unit_standard key: ', trash)
                 # print('I will search: ', self.unit_tm)
