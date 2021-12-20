@@ -19,7 +19,7 @@ class AnalyzeWB:
         try:
             # print('analyzewb 2')
             self.wb=self.xl.Workbooks.Open(kwargs['wb'])
-            # print('analyzewb 3')
+            # print('analyzewb 3', self.wb)
         except:
             try:
                 if Path(Path(tempfile.gettempdir()) / 'gen_py').exists():
@@ -77,7 +77,9 @@ class AnalyzeWB:
 
     def is_proper_workbook(self):
         try:
-            if self.wb:
+            # print('is_proper_workbook', self.wb)
+            # print(type(self.wb))
+            if self.wb.Sheets.Count>0:
                 return True
         except:
             self.error_sh.cell(row=self.error_row, column=6, value='Error, Workbook is not proper facture.')
