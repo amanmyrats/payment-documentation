@@ -161,7 +161,7 @@ class TabPayment:
         source_parent=Path(self.mt_folder_value.get())
         # general_invoice_file=source_parent / 'GENERAL INVOICE rev19.xlsm'
         general_invoice_file=Path(self.ginvoice_excel.get())
-        destination=situation_file.parent / 'Payment Documentation'
+        destination=situation_file.parent / 'Payment Documentations'
 
         if not destination.exists():
             destination.mkdir(parents=True)

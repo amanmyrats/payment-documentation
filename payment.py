@@ -116,6 +116,7 @@ class Payment:
         if excel_analyzer.what_is_it == 'ygt':
             df_situation = excel_analyzer.df_situation
             rows_count = df_situation.shape[0]
+            print(rows_count)
             print('Assigning situation excel to dictionary...')
             for i in range(5, rows_count):
                 if str(df_situation.iloc[i, self.x_col]).lower() == 'x' and \
@@ -431,6 +432,8 @@ class Payment:
         list_found_routage = list()
         if not facture_no in self.set_searched_factures:
             # print('Searching: ', routage_no)
+            if '/' in routage_no:
+                routage_no = str(routage_no).replace('/','-')
             pattern1 = r'.*?' + str(routage_no) + r'\D.*[pP][dD][fF]$'
             found_routage = self.df_routage[self.df_routage['path'].str.match(
                 pattern1, case=False, na=False)]
@@ -779,7 +782,9 @@ class Payment:
                 self.dict_decl_splitted[found_decl] = {}
                 # Split found declaration
             self.split_declaration(
-                path=found_decl, destination=self.destination / boq_code / facture_no, decl_pages=decl_pages)
+                path=found_decl, 
+                destination=self.destination / boq_code / facture_no, 
+                decl_pages=decl_pages)
 
     def split_declaration(self, path, destination, decl_pages):
         # print('inside split declaraion')
@@ -865,6 +870,7 @@ class Payment:
             # Destination
             try:
                 dst = self.dict_to_copy[facture_no]['destination']
+                
             except:
                 print('There is no such destionation in facture {}'.format(facture_no))
                 self.not_found_docs['destination'].append(
@@ -942,7 +948,8 @@ class Payment:
                             self.dict_tds_splitted[tds][page]['destination']
                             # self.multiple_page_in_one_facture = False
                             for destination in self.dict_tds_splitted[tds][page]['destination']:
-
+                                if not Path(destination).exists():
+                                    Path(destination).mkdir(parents=True)
                                 tds_page_path = destination / \
                                     str(tds_page_name)
                                 # if self.multiple_page_in_one_facture:
@@ -1015,7 +1022,8 @@ class Payment:
                     try:
                         self.dict_decl_splitted[decl][page]['destination']
                         for destination in self.dict_decl_splitted[decl][page]['destination']:
-
+                            if not Path(destination).exists():
+                                Path(destination).mkdir(parents=True)
                             decl_page_path = destination / str(decl_page_name)
                             with open(decl_page_path, 'wb') as decl_page:
                                 # print('in for 4')
@@ -1103,10 +1111,12 @@ class Payment:
                         self.is_boq_page_added = True
 
                     # Add pdfs inside facture folder into writer_merger
-                    reader_merger = PdfReader(pdf)
-                    writer_merger.addpages(reader_merger.pages)
-                    reader_merger = None
-
+                    try:
+                        reader_merger = PdfReader(pdf)
+                        writer_merger.addpages(reader_merger.pages)
+                        reader_merger = None
+                    except:
+                        self.not_found_docs['other'].append('This pdf cannot be merged {pdf} {boq}'.format(pdf=pdf, boq=boq))
                     # If there is a memory issue then save part of pdf and continue merging new pdfs
                     if (pdf_counter % 150) == 0 or available_ram(type='percentage') < 10:
                         self.pdf_writer_is_null = True
@@ -1163,12 +1173,12 @@ class Payment:
 if __name__ == '__main__':
     start = time.perf_counter()
 
-    xpath = Path(r'D:\BYTK_Facturation\7. MT')
+    xpath = Path(r'D:\BYTK_Facturation\TBA')
     destination_path = Path.cwd() / 'payment'
     situation_file = Path(
-        r'D:\BYTK_Facturation\7. MT\situation file\20.12.CRA_ST12 rev06.xlsm')
+        r'D:\BYTK_Facturation\TBA\Material Sanawy Turkmenbasy Bank-A1 rev05 - again print.xlsx')
     general_invoice_file = Path(
-        r'D:\BYTK_Facturation\7. MT\GENERAL INVOICE rev19.xlsm')
+        r'D:\BYTK_Facturation\TBA\GENERAL INVOICE rev25.xlsm')
 
     test = Payment(source_parent=xpath, destination=destination_path,
                    situation_file=situation_file, general_invoice_file=general_invoice_file)
